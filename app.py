@@ -1,3 +1,4 @@
+import time 
 import os
 from time import gmtime, strftime
 from secrets import *
@@ -7,8 +8,14 @@ from wordcloud import WordCloud
 from pyshorteners import Shortener
 logfile_name = "tweets_doris.log"
 def do_cool_stuff():
-	topic = wikipedia.random()
-	text = wikipedia.summary(topic)
+        text=""
+        while(len(text)<500):
+            topic = wikipedia.random()
+            print "trying: ", topic
+            try:
+	        text = wikipedia.summary(topic)
+	    except(wikipedia.exceptions.DisambiguationError):
+	        continue
 	wc = WordCloud(max_font_size=40, relative_scaling=.5)
 	wc.generate(text)
 	image = wc.to_image()
@@ -34,5 +41,7 @@ def log(message):
         t = strftime("%d %b %Y %H:%M:%S", gmtime())
         f.write("\n" + t + " " + message)
 for i in range(50):
-	print i 
-	do_cool_stuff()
+    print "sleeping "
+    time.sleep(10)
+    print i ,"th tweet"
+    do_cool_stuff()
