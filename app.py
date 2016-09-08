@@ -9,6 +9,7 @@ from pyshorteners import Shortener
 logfile_name = "tweets_doris.log"
 def do_cool_stuff():
         text=""
+        # Trying to find wikipedia pages that have a lot of words so that the wordcloud looks pretty.
         while(len(text)<500):
             topic = wikipedia.random()
             print "trying: ", topic
@@ -16,11 +17,12 @@ def do_cool_stuff():
 	        text = wikipedia.summary(topic)
 	    except(wikipedia.exceptions.DisambiguationError):
 	        continue
+	#Generate and Save WordCloud
 	wc = WordCloud(max_font_size=40, relative_scaling=.5)
 	wc.generate(text)
 	image = wc.to_image()
-	image.save(topic+".png")
-	fn = os.path.abspath(topic+".png")
+	image.save("../images/"+topic+".png")
+	fn = os.path.abspath("../images/"+topic+".png")
 	auth = tweepy.OAuthHandler(C_KEY, C_SECRET)
 	auth.set_access_token(A_TOKEN, A_TOKEN_SECRET)
 	api = tweepy.API(auth)
@@ -29,7 +31,12 @@ def do_cool_stuff():
 
 	# Send the tweet and log success or failure
 	try:
-	    api.update_with_media(fn,status="Wordcloud of Wikipedia Article Summary of "+topic+"."+shortener.short(url))
+	#    api.update_with_media(fn,status="Wordcloud of Wikipedia Article Summary of "+topic+"."+shortener.short(url))
+	    status  = api.update_with_media(fn)
+	    #Storing the Tweet ID and Topic
+	    f = open("id_topic","a")
+	    f.write(str(status.id) +","+topic+"\n")
+	    f.close()
 	except tweepy.error.TweepError as e:
 	    log(e.message)
 	else:
